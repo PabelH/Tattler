@@ -26,8 +26,8 @@ const getRestaurantById = async (req, res) => {
 // Agregar un nuevo restaurante
 const addRestaurant = async (req, res) => {
   try {
-    const { name, cuisine, schedule } = req.body;
-    const restaurant = new Restaurant({ name, cuisine, schedule });
+    const { name, address, borough, cuisine, image, schedule, grades, comments } = req.body;
+    const restaurant = new Restaurant({ name, address, borough, cuisine, image, schedule, grades, comments });
     await restaurant.save();
     res.json(restaurant);
   } catch (error) {
