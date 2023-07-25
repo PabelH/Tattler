@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurantes</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+</head>
+<body>
+  <header>
+    <h1>Restaurantes</h1>
+<div class="d-flex search">
+  <form id="search-form" class="d-flex">
+    <input type="text" id="search-input" class="form-control" placeholder="Buscar por nombre, cocina o ciudad">
+    <button type="submit" class="btn btn-primary ms-2">Buscar</button>
+  </form>
+</div>
+  </header>
+  <div id="restaurants-container"></div>
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Agregar Calificación y Comentario</h2>
+      <form id="rating-form">
+        <label for="rating">Calificación (1-5):</label>
+        <input type="number" id="rating" name="rating" min="1" max="5" required>
+        <label for="comment">Comentario:</label>
+        <textarea id="comment" name="comment" rows="4" cols="50"></textarea>
+        <button type="button" id="save-rating-btn">Guardar</button>
+      </form>
+    </div>
+  </div>
+  <div id="rating-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Calificaciones y Comentarios</h2>
+      <div id="rating-comments"></div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

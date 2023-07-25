@@ -3,7 +3,15 @@ const Restaurant = require('../models/Restaurant');
 // Obtener todos los restaurantes
 const getAllRestaurants = async (req, res) => {
   try {
-    const restaurants = await Restaurant.find();
+    const { searchQuery } = req.query;
+    let query = {};
+
+    if (searchQuery) {
+      // Utilizar el operador $text para realizar una búsqueda de texto completo
+      query = { $text: { $search: searchQuery } };
+    }
+
+    const restaurants = await Restaurant.find(query);
     res.json(restaurants);
   } catch (error) {
     res.status(500).json({ error: 'Error al obtener los restaurantes' });
@@ -24,10 +32,11 @@ const getRestaurantById = async (req, res) => {
 };
 
 // Agregar un nuevo restaurante
+
 const addRestaurant = async (req, res) => {
   try {
-    const { name, address, borough, cuisine, image, schedule, grades, comments } = req.body;
-    const restaurant = new Restaurant({ name, address, borough, cuisine, image, schedule, grades, comments });
+    const { name, address, cuisine, image, schedule, grades } = req.body;
+    const restaurant = new Restaurant({ name, address, cuisine, image, schedule, grades });
     await restaurant.save();
     res.json(restaurant);
   } catch (error) {
@@ -38,10 +47,20 @@ const addRestaurant = async (req, res) => {
 // Actualizar un restaurante por ID
 const updateRestaurantById = async (req, res) => {
   try {
-    const restaurant = await Restaurant.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const restaurantId = req.params.id;
+    const { rating, comment } = req.body;
+
+    const restaurant = await Restaurant.findById(restaurantId);
     if (!restaurant) {
       return res.status(404).json({ error: 'Restaurante no encontrado' });
     }
+
+    // Actualizar la calificación y comentarios en el restaurante
+    if (rating) {
+      restaurant.grades.push({ date: new Date(), score: rating, comment: comment });
+    }
+
+    await restaurant.save();
     res.json(restaurant);
   } catch (error) {
     res.status(500).json({ error: 'Error al actualizar el restaurante' });
