@@ -17,4 +17,7 @@ router.patch('/restaurants/:id', restaurantCont.updateRestaurantById);
 // Ruta para eliminar un restaurante por ID
 router.delete('/restaurants/:id', restaurantCont.deleteRestaurantById);
 
+// Ruta para actualizar un restaurante por ID
+router.patch('/restaurants/:id/edit', restaurantCont.editRestaurantById);
+
 module.exports = router;

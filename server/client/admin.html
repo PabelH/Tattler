@@ -3,47 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Restaurantes - Admin</title>
+  <title>Tattler</title>
   <link rel="stylesheet" href="styles.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
 </head>
 <body>
   <header>
-    <!-- Título de la página -->
-    <h1>Restaurantes - Admin</h1>
-    <!-- Formulario de búsqueda -->
-    <div class="d-flex search">
-      <form id="search-form" class="d-flex">
-        <!-- Campo de búsqueda -->
-        <input type="text" id="search-input" class="form-control" placeholder="Buscar por nombre, cocina o ciudad">
-        <!-- Botón de búsqueda -->
-        <button type="submit" class="btn btn-primary ms-2">Buscar</button>
-      </form>
-    </div>
+    <h1>Tattler</h1>
+    <h2>¿Qué o dónde quieres comer hoy?</h2>
+<div class="d-flex search">
+  <form id="search-form" class="d-flex">
+    <input type="text" id="search-input" class="form-control" placeholder="Buscar por nombre, cocina o ciudad">
+    <button type="submit" class="btn btn-primary ms-2">Buscar</button>
+  </form>
+</div>
   </header>
-
-  <!-- Contenedor de tarjetas de restaurantes -->
+  <div class="container">
+    <button id="add-restaurant-btn" class="btn btn-success">Agregar Restaurante</button>
+  </div>
+  </header>
   <div id="restaurants-container"></div>
-
-  <!-- Modal para agregar calificación y comentario -->
   <div id="modal" class="modal">
     <div class="modal-content">
       <span class="close">&times;</span>
       <h2>Agregar Calificación y Comentario</h2>
       <form id="rating-form">
-        <!-- Campo para ingresar calificación -->
         <label for="rating">Calificación (1-5):</label>
         <input type="number" id="rating" name="rating" min="1" max="5" required>
-        <!-- Campo para ingresar comentario -->
         <label for="comment">Comentario:</label>
         <textarea id="comment" name="comment" rows="4" cols="50"></textarea>
-        <!-- Botón para guardar calificación y comentario -->
-        <button type="button" id="save-rating-btn">Guardar</button>
+        <button type="button" id="save-rating-btn" class="btn btn-primary">Guardar</button>
       </form>
     </div>
   </div>
-
-  <!-- Modal para ver calificaciones y comentarios -->
   <div id="rating-modal" class="modal">
     <div class="modal-content">
       <span class="close">&times;</span>
@@ -51,55 +44,80 @@
       <div id="rating-comments"></div>
     </div>
   </div>
+  <!-- Modal para editar restaurantes -->
+  <div id="edit-modal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <form id="edit-form">
+      <label for="edit-name">Nombre:</label>
+      <input type="text" id="edit-name" required>
 
-  <!-- Botón para agregar un nuevo restaurante -->
-  <button id="add-restaurant-btn" class="btn btn-success">Agregar Restaurante</button>
+      <label for="edit-building">Edificio:</label>
+      <input type="text" id="edit-building">
 
-  <!-- Modal para editar restaurante -->
-  <div id="edit-restaurant-modal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h2>Editar Restaurante</h2>
-      <form id="edit-restaurant-form">
-        <!-- Campo oculto para guardar el ID del restaurante -->
-        <input type="hidden" id="edit-restaurant-id" name="restaurantId">
-        <!-- Campos para editar el restaurante -->
-        <label for="edit-name">Nombre:</label>
-        <input type="text" id="edit-name" name="name" required>
+      <label for="edit-street">Calle:</label>
+      <input type="text" id="edit-street">
 
-        <label for="edit-cuisine">Tipo de Cocina:</label>
-        <input type="text" id="edit-cuisine" name="cuisine">
+      <label for="edit-zipcode">Código postal:</label>
+      <input type="text" id="edit-zipcode">
 
-        <label for="edit-image">URL de la Imagen:</label>
-        <input type="text" id="edit-image" name="image">
+      <label for="edit-city">Ciudad:</label>
+      <input type="text" id="edit-city" required>
 
-        <label for="edit-schedule">Horarios:</label>
-        <input type="text" id="edit-schedule" name="schedule">
+      <label for="edit-suburb">Barrio:</label>
+      <input type="text" id="edit-suburb">
 
-        <!-- Dirección del restaurante -->
-        <label for="edit-street">Calle:</label>
-        <input type="text" id="edit-street" name="address[street]">
+      <label for="edit-cuisine">Cocina:</label>
+      <input type="text" id="edit-cuisine">
 
-        <label for="edit-suburb">Colonia/Suburbio:</label>
-        <input type="text" id="edit-suburb" name="address[suburb]">
-        
-        <label for="edit-city">Ciudad:</label>
-        <input type="text" id="edit-city" name="address[city]">
+      <label for="edit-image">URL de la imagen:</label>
+      <input type="text" id="edit-image">
 
-        <label for="edit-zipcode">Código Postal:</label>
-        <input type="text" id="edit-zipcode" name="address[zipcode]">
+      <label for="edit-schedule">Horarios:</label>
+      <input type="text" id="edit-schedule">
 
-        <label for="edit-building">Edificio/Número exterior:</label>
-        <input type="text" id="edit-building" name="address[building]">
-
-        <label for="edit-coord">Coordenadas (Latitud, Longitud):</label>
-        <input type="text" id="edit-coord" name="address[coord]">
-
-        <!-- Botón para guardar los cambios -->
-        <button type="submit">Guardar Cambios</button>
-      </form>
-    </div>
+      <button type="button" id="save-edit-btn">Guardar cambios</button>
+    </form>
   </div>
+</div>
+
+  <!-- Modal para agregar un nuevo restaurante -->
+<div id="add-modal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Agregar Nuevo Restaurante</h2>
+    <form id="add-form">
+      <label for="add-name">Nombre:</label>
+      <input type="text" id="add-name" required>
+
+      <label for="add-building">Edificio:</label>
+      <input type="text" id="add-building">
+
+      <label for="add-street">Calle:</label>
+      <input type="text" id="add-street">
+
+      <label for="add-zipcode">Código postal:</label>
+      <input type="text" id="add-zipcode">
+
+      <label for="add-city">Ciudad:</label>
+      <input type="text" id="add-city" required>
+
+      <label for="add-suburb">Barrio:</label>
+      <input type="text" id="add-suburb">
+
+      <label for="add-cuisine">Cocina:</label>
+      <input type="text" id="add-cuisine">
+
+      <label for="add-image">URL de la imagen:</label>
+      <input type="text" id="add-image">
+
+      <label for="add-schedule">Horarios:</label>
+      <input type="text" id="add-schedule">
+
+      <button type="button" id="save-add-btn" class="btn btn-primary">Guardar</button>
+    </form>
+  </div>
+</div>
 
   <script src="crud.js"></script>
 </body>

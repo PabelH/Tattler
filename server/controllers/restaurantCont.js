@@ -45,6 +45,7 @@ const addRestaurant = async (req, res) => {
 };
 
 // Actualizar un restaurante por ID
+//////updateRestaurantById 
 const updateRestaurantById = async (req, res) => {
   try {
     const restaurantId = req.params.id;
@@ -80,10 +81,36 @@ const deleteRestaurantById = async (req, res) => {
   }
 };
 
+//actualizar  un restaurante por ID
+const editRestaurantById = async (req, res) => {
+  try {
+    const restaurantId = req.params.id;
+    const { name, address, cuisine, image, schedule } = req.body;
+
+    const restaurant = await Restaurant.findById(restaurantId);
+    if (!restaurant) {
+      return res.status(404).json({ error: 'Restaurante no encontrado' });
+    }
+
+    // Actualizar los datos del restaurante con los valores recibidos del formulario
+    restaurant.name = name;
+    restaurant.address.city = address.city;
+    restaurant.address.street = address.street; // Asegúrate de que esto actualice el campo correctamente
+    restaurant.cuisine = cuisine;
+    restaurant.image = image;
+    restaurant.schedule = schedule;
+
+    await restaurant.save();
+    res.json(restaurant);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al editar el restaurante' });
+  }
+};
 module.exports = {
   getAllRestaurants,
   getRestaurantById,
   addRestaurant,
   updateRestaurantById,
-  deleteRestaurantById
+  deleteRestaurantById,
+  editRestaurantById
 };

@@ -25,7 +25,17 @@ h2 {
 
 button{
   margin:8px !important;
+  color:white !important;
 }
+.container {
+  max-width: 100% !important;
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.7); 
+}
+
 
 #search-input {
   padding: 5px;
@@ -146,4 +156,8 @@ button[type="submit"] {
 #search-form {
   margin-left: auto !important;
   margin-right: auto !important;
+}
+
+#rating{
+  max-width:150px;
 }

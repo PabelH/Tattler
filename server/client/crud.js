@@ -3,56 +3,64 @@ document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("search-input");
   const restaurantsContainer = document.getElementById("restaurants-container");
 
+    // Función para recargar la página
+const reloadPage = () => {
+  window.location.reload();
+};
+
   // Función para mostrar el modal de agregar calificación y comentario
-  const showRatingModal = (restaurantId) => {
-    const modal = document.getElementById("modal");
-    const ratingForm = document.getElementById("rating-form");
-    const closeModalBtn = document.querySelector(".close");
-    const saveRatingBtn = document.getElementById("save-rating-btn");
+ const showRatingModal = (restaurantId) => {
+  const modal = document.getElementById("modal");
+  const ratingForm = document.getElementById("rating-form");
+  const closeModalBtn = document.querySelector(".close");
+  const saveRatingBtn = document.getElementById("save-rating-btn");
 
-    saveRatingBtn.addEventListener("click", async (event) => {
-      event.preventDefault();
-      const rating = document.getElementById("rating").value;
-      const comment = document.getElementById("comment").value;
+  
 
-      // Enviar la calificación y comentario al servidor
-      try {
-        const response = await fetch(`/api/restaurants/${restaurantId}`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ rating, comment }), // Enviar ambos rating y comment
-        });
-        if (response.ok) {
-          closeModal();
-          getRestaurants().then((restaurants) => {
-            showRestaurants(restaurants);
-          });
-        } else {
-          console.error("Error al guardar calificación y comentario");
-        }
-      } catch (error) {
-        console.error("Error al guardar calificación y comentario:", error);
-      }
-    });
+  const onSaveRatingBtnClick = async (event) => {
+    event.preventDefault();
+    const rating = document.getElementById("rating").value;
+    const comment = document.getElementById("comment").value;
 
-    closeModalBtn.addEventListener("click", closeModal);
-    window.addEventListener("click", outsideClick);
-
-    function closeModal() {
-      modal.style.display = "none";
-      ratingForm.reset();
-    }
-
-    function outsideClick(event) {
-      if (event.target === modal) {
+    // Enviar la calificación y comentario al servidor
+    try {
+      const response = await fetch(`/api/restaurants/${restaurantId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ rating, comment }), // Enviar ambos rating y comment
+      });
+      if (response.ok) {
         closeModal();
+        getRestaurants().then((restaurants) => {
+          showRestaurants(restaurants);
+        });
+      } else {
+        console.error("Error al guardar calificación y comentario");
       }
+    } catch (error) {
+      console.error("Error al guardar calificación y comentario:", error);
     }
-
-    modal.style.display = "block";
   };
+
+  saveRatingBtn.addEventListener("click", onSaveRatingBtnClick);
+  closeModalBtn.addEventListener("click", closeModal);
+  window.addEventListener("click", outsideClick);
+
+  function closeModal() {
+    modal.style.display = "none";
+    ratingForm.reset();
+  }
+
+  function outsideClick(event) {
+    if (event.target === modal) {
+      closeModal();
+    }
+  }
+
+  modal.style.display = "block";
+};
 
   // Función para mostrar el modal con calificaciones y comentarios
   const showRatingCommentsModal = (restaurant) => {
@@ -143,6 +151,28 @@ document.addEventListener("DOMContentLoaded", () => {
         showRatingCommentsModal(restaurant);
       });
       card.appendChild(viewRatingsButton);
+      // Agregar botón de edición
+      const editButton = document.createElement("button");
+      editButton.textContent = "Editar";
+      editButton.classList.add("btn", "btn-secondary");
+      editButton.addEventListener("click", () => {
+        showEditModal(restaurant);
+      });
+      card.appendChild(editButton);
+    // Agregar botón "Eliminar"
+      const deleteButton = document.createElement("button");
+      deleteButton.textContent = "Eliminar";
+      deleteButton.classList.add("btn", "btn-danger");
+      deleteButton.type = "button"; // Cambiar el tipo de botón a "button"
+      deleteButton.addEventListener("click", () => {
+        // Mostrar una confirmación antes de eliminar el restaurante
+        const confirmDelete = confirm("¿Estás seguro de que deseas eliminar este restaurante?");
+        if (confirmDelete) {
+          deleteRestaurant(restaurant._id);
+          reloadPage();
+        }
+      });
+      card.appendChild(deleteButton);
 
       restaurantsContainer.appendChild(card);
     });
@@ -189,82 +219,174 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Función para mostrar el modal de agregar restaurante
+
+
+const showEditModal = (restaurant) => {
+  const editModal = document.getElementById("edit-modal");
+  const closeModalBtn = editModal.querySelector(".close");
+  const editForm = document.getElementById("edit-form");
+  const nameInput = document.getElementById("edit-name");
+  const buildingInput = document.getElementById("edit-building");
+  const streetInput = document.getElementById("edit-street");
+  const zipcodeInput = document.getElementById("edit-zipcode");
+  const cityInput = document.getElementById("edit-city");
+  const suburbInput = document.getElementById("edit-suburb");
+  const cuisineInput = document.getElementById("edit-cuisine");
+  const imageInput = document.getElementById("edit-image");
+  const scheduleInput = document.getElementById("edit-schedule");
+  const saveEditBtn = document.getElementById("save-edit-btn");
+
+  // Rellenar el formulario con los datos actuales del restaurante
+  nameInput.value = restaurant.name;
+  buildingInput.value = restaurant.address.building || "";
+  streetInput.value = restaurant.address.street || "";
+  zipcodeInput.value = restaurant.address.zipcode || "";
+  cityInput.value = restaurant.address.city || "";
+  suburbInput.value = restaurant.address.suburb || "";
+  cuisineInput.value = restaurant.cuisine;
+  imageInput.value = restaurant.image || "";
+  scheduleInput.value = restaurant.schedule;
+
+  const onSaveEditBtnClick = async (event) => {
+  event.preventDefault();
+  const name = nameInput.value;
+  const building = buildingInput.value;
+  const street = streetInput.value;
+  const zipcode = zipcodeInput.value;
+  const city = cityInput.value;
+  const suburb = suburbInput.value;
+  const cuisine = cuisineInput.value;
+  const image = imageInput.value;
+  const schedule = scheduleInput.value;
+
+  // Enviar los datos editados al servidor
+  try {
+    const response = await fetch(`/api/restaurants/${restaurant._id}/edit`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, address: { building, street, zipcode, city, suburb }, cuisine, image, schedule }),
+    });
+    if (response.ok) {
+      closeModal();
+      // Recargar la página después de guardar los cambios exitosamente
+      reloadPage();
+    } else {
+      console.error("Error al guardar los cambios");
+    }
+  } catch (error) {
+    console.error("Error al guardar los cambios:", error);
+  }
+};
+
+  saveEditBtn.addEventListener("click", onSaveEditBtnClick);
+  closeModalBtn.addEventListener("click", closeModal);
+  window.addEventListener("click", outsideClick);
+
+  function closeModal() {
+    editModal.style.display = "none";
+    editForm.reset();
+  }
+
+  function outsideClick(event) {
+    if (event.target === editModal) {
+      closeModal();
+    }
+  }
+
+  editModal.style.display = "block";
+};
+
+ // Función para mostrar el modal de agregar nuevo restaurante
   const showAddRestaurantModal = () => {
-    const modal = document.getElementById("add-restaurant-modal");
-    const closeBtn = modal.querySelector(".close");
-    const addRestaurantForm = document.getElementById("add-restaurant-form");
+    const addModal = document.getElementById("add-modal");
+    const closeAddModalBtn = addModal.querySelector(".close");
+    const addForm = document.getElementById("add-form");
+    const addNameInput = document.getElementById("add-name");
+    const addBuildingInput = document.getElementById("add-building");
+    const addStreetInput = document.getElementById("add-street");
+    const addZipcodeInput = document.getElementById("add-zipcode");
+    const addCityInput = document.getElementById("add-city");
+    const addSuburbInput = document.getElementById("add-suburb");
+    const addCuisineInput = document.getElementById("add-cuisine");
+    const addImageInput = document.getElementById("add-image");
+    const addScheduleInput = document.getElementById("add-schedule");
+    const saveAddBtn = document.getElementById("save-add-btn");
 
-    addRestaurantForm.reset();
+    const onSaveAddBtnClick = async (event) => {
+      event.preventDefault();
+      const name = addNameInput.value;
+      const building = addBuildingInput.value;
+      const street = addStreetInput.value;
+      const zipcode = addZipcodeInput.value;
+      const city = addCityInput.value;
+      const suburb = addSuburbInput.value;
+      const cuisine = addCuisineInput.value;
+      const image = addImageInput.value;
+      const schedule = addScheduleInput.value;
 
-    closeBtn.addEventListener("click", () => {
-      modal.style.display = "none";
-    });
-
-    window.addEventListener("click", (event) => {
-      if (event.target === modal) {
-        modal.style.display = "none";
+      // Enviar los datos del nuevo restaurante al servidor
+      try {
+        const response = await fetch("/api/restaurants", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name, address: { building, street, zipcode, city, suburb }, cuisine, image, schedule }),
+        });
+        if (response.ok) {
+          closeModal();
+          // Recargar la página después de guardar el nuevo restaurante exitosamente
+          reloadPage();
+        } else {
+          console.error("Error al guardar el nuevo restaurante");
+        }
+      } catch (error) {
+        console.error("Error al guardar el nuevo restaurante:", error);
       }
-    });
+    };
 
-    modal.style.display = "block";
+    saveAddBtn.addEventListener("click", onSaveAddBtnClick);
+    closeAddModalBtn.addEventListener("click", closeModal);
+    window.addEventListener("click", outsideClick);
+
+    function closeModal() {
+      addModal.style.display = "none";
+      addForm.reset();
+    }
+
+    function outsideClick(event) {
+      if (event.target === addModal) {
+        closeModal();
+      }
+    }
+
+    addModal.style.display = "block";
   };
 
-  // Función para agregar un nuevo restaurante
-  const addRestaurant = async (restaurantData) => {
+  const addRestaurantBtn = document.getElementById("add-restaurant-btn");
+  addRestaurantBtn.addEventListener("click", showAddRestaurantModal);
+
+      // Función para eliminar un restaurante
+  const deleteRestaurant = async (restaurantId) => {
     try {
-      const response = await fetch("/api/restaurants", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(restaurantData),
+      const response = await fetch(`/api/restaurants/${restaurantId}`, {
+        method: "DELETE",
       });
       if (response.ok) {
-        const newRestaurant = await response.json();
-        closeModal();
-        getRestaurants().then((restaurants) => {
-          showRestaurants(restaurants);
-        });
-        return newRestaurant;
+        // Eliminar el restaurante de la lista y actualizar la vista
+        const updatedRestaurants = restaurants.filter((restaurant) => restaurant._id !== restaurantId);
+        showRestaurants(updatedRestaurants);
+        reloadPage(); // Recargar la página después de eliminar el restaurante
       } else {
-        console.error("Error al agregar el restaurante");
-        return null;
+        console.error("Error al eliminar el restaurante");
       }
     } catch (error) {
-      console.error("Error al agregar el restaurante:", error);
-      return null;
+      console.error("Error al eliminar el restaurante:", error);
     }
   };
-
-  // Obtener el formulario de agregar restaurante
-  const addRestaurantForm = document.getElementById("add-restaurant-form");
-
-  // Función para manejar el envío del formulario de agregar restaurante
-
-  addRestaurantForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const formData = new FormData(addRestaurantForm);
-    const restaurantData = Object.fromEntries(formData.entries());
-    const newRestaurant = await addRestaurant(restaurantData);
-    if (newRestaurant) {
-      // Éxito al agregar el restaurante, mostrar mensaje o hacer algo si deseas
-      console.log("Restaurante agregado exitosamente:", newRestaurant);
-    } else {
-      // Error al agregar el restaurante, mostrar mensaje de error o hacer algo si deseas
-      console.error("Error al agregar el restaurante");
-    }
-  });
-
-  // Obtener el botón para agregar un restaurante
-  const addRestaurantBtn = document.getElementById("add-restaurant-btn");
-
-  // Mostrar el modal de agregar restaurante al hacer clic en el botón
-  addRestaurantBtn.addEventListener("click", () => {
-    showAddRestaurantModal();
-  });
-
-
+  
   // Obtener la lista de restaurantes y mostrarlos al cargar la página
   getRestaurants().then((restaurants) => {
     showRestaurants(restaurants);
